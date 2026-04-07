@@ -1,0 +1,335 @@
+<div class="table-responsive">
+    <table class="table table-bordered table-striped">
+        <thead class="table-primary">
+            <tr>
+                <th style="width: 220px;">Критерий</th>
+                {% for service in services %}
+                <th class="text-center">{{ service.bank.name }}<br><small>{{ service.name }}</small></th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Оценка сервиса (динамический SAW) -->
+            <tr class="table-secondary">
+                <td><strong>Оценка сервиса</strong></td>
+                {% for service in services %}
+                <td class="text-center">
+                    <span class="score-badge-compare
+                        {% if service.dynamic_saw_10 >= 9 %}score-high
+                        {% elif service.dynamic_saw_10 >= 8 %}score-medium
+                        {% else %}score-low{% endif %}">
+                        {{ service.dynamic_saw_10|floatformat:1 }}
+                    </span>
+                </td>
+                {% endfor %}
+            </tr>
+
+            <!-- Стоимость -->
+            <tr>
+                <td><strong>Стоимость (₽/мес)</strong></td>
+                {% for s in services %}
+                <td class="text-center">
+                    {% if s.monthly_fee_min == s.monthly_fee_max %}
+                        {{ s.monthly_fee_min|floatformat:0 }}
+                    {% else %}
+                        {{ s.monthly_fee_min|floatformat:0 }}-{{ s.monthly_fee_max|floatformat:0 }}
+                    {% endif %}
+                </td>
+                {% endfor %}
+            </tr>
+
+            <!-- Лимит переводов -->
+            <tr>
+                <td><strong>Лимит переводов (₽/мес)</strong></td>
+                {% for s in services %}
+                <td class="text-center">{{ s.transfer_free_limit|floatformat:0 }}</td>
+                {% endfor %}
+            </tr>
+
+            <!-- Скорость подключения -->
+            <tr>
+                <td><strong>Скорость подключения (мин)</strong></td>
+                {% for s in services %}
+                <td class="text-center">{{ s.onboarding_speed }}</td>
+                {% endfor %}
+            </tr>
+
+            <!-- ===== НАЛОГОВО-УЧЁТНАЯ ИНТЕГРАЦИЯ ===== -->
+            <tr class="table-info">
+                <th colspan="{{ services|length|add:1 }}"><i class="bi bi-receipt"></i> Налогово-учётная интеграция</th>
+            </tr>
+
+            <tr>
+                <td>Автоматический расчёт налога</strong></td>
+                {% for s in services %}
+                <td class="text-center">
+                    {% if s.auto_tax_calculation %}
+                        <i class="bi bi-check-circle-fill feature-yes" style="font-size: 1.3rem;"></i>
+                    {% else %}
+                        <i class="bi bi-x-circle-fill feature-no" style="font-size: 1.3rem;"></i>
+                    {% endif %}
+                </td>
+                {% endfor %}
+            </tr>
+
+            <tr>
+                <td>Автоматическая оплата налога</strong></td>
+                {% for s in services %}
+                <td class="text-center">
+                    {% if s.auto_tax_payment %}
+                        <i class="bi bi-check-circle-fill feature-yes" style="font-size: 1.3rem;"></i>
+                    {% else %}
+                        <i class="bi bi-x-circle-fill feature-no" style="font-size: 1.3rem;"></i>
+                    {% endif %}
+                 </span></td>
+                {% endfor %}
+            </tr>
+
+            <tr>
+                <td>Автоматическое формирование чеков</strong></td>
+                {% for s in services %}
+                <td class="text-center">
+                    {% if s.automatic_checks %}
+                        <i class="bi bi-check-circle-fill feature-yes" style="font-size: 1.3rem;"></i>
+                    {% else %}
+                        <i class="bi bi-x-circle-fill feature-no" style="font-size: 1.3rem;"></i>
+                    {% endif %}
+                 </span></td>
+                {% endfor %}
+            </tr>
+
+            <tr>
+                <td>Отмена чеков</strong></td>
+                {% for s in services %}
+                <td class="text-center">
+                    {% if s.cancel_checks %}
+                        <i class="bi bi-check-circle-fill feature-yes" style="font-size: 1.3rem;"></i>
+                    {% else %}
+                        <i class="bi bi-x-circle-fill feature-no" style="font-size: 1.3rem;"></i>
+                    {% endif %}
+                 </span></td>
+                {% endfor %}
+            </tr>
+
+            <!-- ===== ПЛАТЁЖНО-РАСЧЁТНЫЙ ФУНКЦИОНАЛ ===== -->
+            <tr class="table-info">
+                <th colspan="{{ services|length|add:1 }}"><i class="bi bi-credit-card"></i> Платёжно-расчётный функционал</th>
+            </tr>
+
+            <tr>
+                <td>Приём переводов по номеру телефона</strong></td>
+                {% for s in services %}
+                <td class="text-center">
+                    {% if s.payment_by_phone %}
+                        <i class="bi bi-check-circle-fill feature-yes" style="font-size: 1.3rem;"></i>
+                    {% else %}
+                        <i class="bi bi-x-circle-fill feature-no" style="font-size: 1.3rem;"></i>
+                    {% endif %}
+                 </span></td>
+                {% endfor %}
+            </tr>
+
+            <tr>
+                <td>Приём переводов по QR-коду</strong></td>
+                {% for s in services %}
+                <td class="text-center">
+                    {% if s.payment_by_qr %}
+                        <i class="bi bi-check-circle-fill feature-yes" style="font-size: 1.3rem;"></i>
+                    {% else %}
+                        <i class="bi bi-x-circle-fill feature-no" style="font-size: 1.3rem;"></i>
+                    {% endif %}
+                 </span></td>
+                {% endfor %}
+            </tr>
+
+            <tr>
+                <td>Приём переводов по реквизитам</strong></td>
+                {% for s in services %}
+                <td class="text-center">
+                    {% if s.payment_by_details %}
+                        <i class="bi bi-check-circle-fill feature-yes" style="font-size: 1.3rem;"></i>
+                    {% else %}
+                        <i class="bi bi-x-circle-fill feature-no" style="font-size: 1.3rem;"></i>
+                    {% endif %}
+                 </span></td>
+                {% endfor %}
+            </tr>
+
+            <!-- ===== БЕЗОПАСНОСТЬ ===== -->
+            <tr class="table-info">
+                <th colspan="{{ services|length|add:1 }}"><i class="bi bi-shield-lock"></i> Безопасность</th>
+            </tr>
+
+            <tr>
+                <td>Двухфакторная аутентификация</strong></td>
+                {% for s in services %}
+                <td class="text-center">
+                    {% if s.two_factor_auth %}
+                        <i class="bi bi-check-circle-fill feature-yes" style="font-size: 1.3rem;"></i>
+                    {% else %}
+                        <i class="bi bi-x-circle-fill feature-no" style="font-size: 1.3rem;"></i>
+                    {% endif %}
+                 </span></td>
+                {% endfor %}
+            </tr>
+
+            <tr>
+                <td>Антифрод-мониторинг</strong></td>
+                {% for s in services %}
+                <td class="text-center">
+                    {% if s.antifraud_automated %}
+                        <i class="bi bi-check-circle-fill feature-yes" style="font-size: 1.3rem;"></i>
+                    {% else %}
+                        <i class="bi bi-x-circle-fill feature-no" style="font-size: 1.3rem;"></i>
+                    {% endif %}
+                 </span></td>
+                {% endfor %}
+            </tr>
+
+            <!-- ===== УДОБСТВО ИСПОЛЬЗОВАНИЯ ===== -->
+            <tr class="table-info">
+                <th colspan="{{ services|length|add:1 }}"><i class="bi bi-phone"></i> Удобство использования</th>
+            </tr>
+
+            <tr>
+                <td>Веб-кабинет</strong></td>
+                {% for s in services %}
+                <td class="text-center">
+                    {% if s.web_cabinet %}
+                        <i class="bi bi-check-circle-fill feature-yes" style="font-size: 1.3rem;"></i>
+                    {% else %}
+                        <i class="bi bi-x-circle-fill feature-no" style="font-size: 1.3rem;"></i>
+                    {% endif %}
+                 </span></td>
+                {% endfor %}
+            </tr>
+
+            <tr>
+                <td>Мобильное приложение</strong></td>
+                {% for s in services %}
+                <td class="text-center">
+                    {% if s.mobile_app %}
+                        <i class="bi bi-check-circle-fill feature-yes" style="font-size: 1.3rem;"></i>
+                    {% else %}
+                        <i class="bi bi-x-circle-fill feature-no" style="font-size: 1.3rem;"></i>
+                    {% endif %}
+                 </span></td>
+                {% endfor %}
+            </tr>
+
+            <tr>
+                <td>Поддержка 24/7</strong></td>
+                {% for s in services %}
+                <td class="text-center">
+                    {% if s.support_online %}
+                        <i class="bi bi-check-circle-fill feature-yes" style="font-size: 1.3rem;"></i>
+                    {% else %}
+                        <i class="bi bi-x-circle-fill feature-no" style="font-size: 1.3rem;"></i>
+                    {% endif %}
+                 </span></td>
+                {% endfor %}
+            </tr>
+
+            <!-- ===== ДОПОЛНИТЕЛЬНЫЕ ЦИФРОВЫЕ СЕРВИСЫ ===== -->
+            <tr class="table-info">
+                <th colspan="{{ services|length|add:1 }}"><i class="bi bi-graph-up"></i> Дополнительные цифровые сервисы</th>
+            </tr>
+
+            <tr>
+                <td>Наличие аналитики доходов</strong></td>
+                {% for s in services %}
+                <td class="text-center">
+                    {% if s.income_statistics %}
+                        <i class="bi bi-check-circle-fill feature-yes" style="font-size: 1.3rem;"></i>
+                    {% else %}
+                        <i class="bi bi-x-circle-fill feature-no" style="font-size: 1.3rem;"></i>
+                    {% endif %}
+                 </span></td>
+                {% endfor %}
+            </tr>
+
+            <tr>
+                <td>Контроль лимита дохода</strong></td>
+                {% for s in services %}
+                <td class="text-center">
+                    {% if s.limit_control %}
+                        <i class="bi bi-check-circle-fill feature-yes" style="font-size: 1.3rem;"></i>
+                    {% else %}
+                        <i class="bi bi-x-circle-fill feature-no" style="font-size: 1.3rem;"></i>
+                    {% endif %}
+                 </span></td>
+                {% endfor %}
+            </tr>
+
+            <!-- ===== ИНФРАСТРУКТУРА И РЕПУТАЦИЯ ===== -->
+            <tr class="table-info">
+                <th colspan="{{ services|length|add:1 }}"><i class="bi bi-bank2"></i> Инфраструктура и репутация</th>
+            </tr>
+
+            <tr>
+                <td>Отделений в Нижегородской области</strong></td>
+                {% for s in services %}
+                <td class="text-center">{{ s.bank.branches_count }}</td>
+                {% endfor %}
+            </tr>
+
+            <tr>
+                <td>Банкоматов в Нижегородской области</strong></td>
+                {% for s in services %}
+                <td class="text-center">{{ s.bank.atms_count }}</span></td>
+                {% endfor %}
+            </tr>
+
+            <tr>
+                <td>Народный рейтинг (место)</strong></span></td>
+                {% for s in services %}
+                <td class="text-center">
+                    {% if s.bank.public_rating %}
+                        #{{ s.bank.public_rating }}
+                    {% else %}
+                        —
+                    {% endif %}
+                 </span></td>
+                {% endfor %}
+            </tr>
+
+            <tr>
+                <td>Средняя оценка клиентов</strong> </span></td>
+                {% for s in services %}
+                <td class="text-center">{{ s.bank.avg_customer_rating|floatformat:2 }}/5</span> </span></td>
+                {% endfor %}
+            </tr>
+
+            <!-- ===== МЕЖДУНАРОДНЫЕ ПЕРЕВОДЫ ===== -->
+            <tr class="table-info">
+                <th colspan="{{ services|length|add:1 }}"><i class="bi bi-globe"></i> Международные переводы</th>
+            </tr>
+
+            <tr>
+                <td>Доступны международные переводы</strong> </span></td>
+                {% for s in services %}
+                <td class="text-center">
+                    {% if s.international_transfers %}
+                        <i class="bi bi-check-circle-fill feature-yes" style="font-size: 1.3rem;"></i>
+                    {% else %}
+                        <i class="bi bi-x-circle-fill feature-no" style="font-size: 1.3rem;"></i>
+                    {% endif %}
+                </span> </span></td>
+                {% endfor %}
+            </tr>
+
+            <tr>
+                <td>SWIFT переводы</strong> </span></td>
+                {% for s in services %}
+                <td class="text-center">
+                    {% if s.swift_available %}
+                        <i class="bi bi-check-circle-fill feature-yes" style="font-size: 1.3rem;"></i>
+                    {% else %}
+                        <i class="bi bi-x-circle-fill feature-no" style="font-size: 1.3rem;"></i>
+                    {% endif %}
+                </span> </span></td>
+                {% endfor %}
+            </tr>
+        </tbody>
+    </table>
+</div>

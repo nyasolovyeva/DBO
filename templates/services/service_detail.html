@@ -1,0 +1,281 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ service.bank.name }} - {{ service.name }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'bank_list' %}">Главная</a></li>
+            <li class="breadcrumb-item active">{{ service.bank.name }} - {{ service.name }}</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <div class="col-md-8">
+            <!-- Основная информация -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">{{ service.bank.name }} - {{ service.name }}</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5><i class="bi bi-info-circle"></i> Основные параметры</h5>
+                            <table class="table table-sm">
+                                <tr><th>Скорость подключения:</th><td>{{ service.onboarding_speed }} минут</span></td>
+                                <tr><th>Мобильное приложение:</th><td>
+                                    {% if service.mobile_app %}
+                                        <i class="bi bi-check-circle-fill feature-yes"></i> Есть
+                                    {% else %}
+                                        <i class="bi bi-x-circle-fill feature-no"></i> Нет
+                                    {% endif %}
+                                 </span></td>
+                                <tr><th>Веб-кабинет:</th><td>
+                                    {% if service.web_cabinet %}
+                                        <i class="bi bi-check-circle-fill feature-yes"></i> Есть
+                                    {% else %}
+                                        <i class="bi bi-x-circle-fill feature-no"></i> Нет
+                                    {% endif %}
+                                 </span></td>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <h5><i class="bi bi-trophy"></i> Оценка нашего сервиса</h5>
+                            <div class="text-center" style="margin-top: -30px;">
+                                <div class="display-1">
+                                    <span class="score-badge-large
+                                        {% if service.rating_10 >= 9 %}score-high
+                                        {% elif service.rating_10 >= 8 %}score-medium
+                                        {% else %}score-low{% endif %}">
+                                        {{ service.rating_10|floatformat:1 }}
+                                    </span>
+                                </div>
+                                <p class="text-muted">из 10 (по экспертным оценкам)</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5><i class="bi bi-receipt"></i> Налогово-учётная интеграция</h5>
+                            <ul class="list-unstyled">
+                                <li>
+                                    {% if service.auto_tax_calculation %}
+                                        <i class="bi bi-check-circle-fill feature-yes"></i>
+                                    {% else %}
+                                        <i class="bi bi-x-circle-fill feature-no"></i>
+                                    {% endif %}
+                                    Автоматический расчёт налога
+                                </li>
+                                <li>
+                                    {% if service.auto_tax_payment %}
+                                        <i class="bi bi-check-circle-fill feature-yes"></i>
+                                    {% else %}
+                                        <i class="bi bi-x-circle-fill feature-no"></i>
+                                    {% endif %}
+                                    Автоматическая оплата налога
+                                </li>
+                                <li>
+                                    {% if service.automatic_checks %}
+                                        <i class="bi bi-check-circle-fill feature-yes"></i>
+                                    {% else %}
+                                        <i class="bi bi-x-circle-fill feature-no"></i>
+                                    {% endif %}
+                                    Автоматическое формирование чеков
+                                </li>
+                                <li>
+                                    {% if service.cancel_checks %}
+                                        <i class="bi bi-check-circle-fill feature-yes"></i>
+                                    {% else %}
+                                        <i class="bi bi-x-circle-fill feature-no"></i>
+                                    {% endif %}
+                                    Отмена чеков
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div class="col-md-6">
+                            <h5><i class="bi bi-credit-card"></i> Платёжно-расчётный функционал</h5>
+                            <ul class="list-unstyled">
+                                <li>
+                                    {% if service.payment_by_phone %}
+                                        <i class="bi bi-check-circle-fill feature-yes"></i>
+                                    {% else %}
+                                        <i class="bi bi-x-circle-fill feature-no"></i>
+                                    {% endif %}
+                                    Приём переводов по номеру телефона
+                                </li>
+                                <li>
+                                    {% if service.payment_by_qr %}
+                                        <i class="bi bi-check-circle-fill feature-yes"></i>
+                                    {% else %}
+                                        <i class="bi bi-x-circle-fill feature-no"></i>
+                                    {% endif %}
+                                    Приём переводов по QR-коду
+                                </li>
+                                <li>
+                                    {% if service.payment_by_details %}
+                                        <i class="bi bi-check-circle-fill feature-yes"></i>
+                                    {% else %}
+                                        <i class="bi bi-x-circle-fill feature-no"></i>
+                                    {% endif %}
+                                    Приём переводов по реквизитам
+                                </li>
+                                <li>
+                                    {% if service.sbp_integration %}
+                                        <i class="bi bi-check-circle-fill feature-yes"></i>
+                                    {% else %}
+                                        <i class="bi bi-x-circle-fill feature-no"></i>
+                                    {% endif %}
+                                    Переводы через СБП
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="row mt-3">
+                        <div class="col-md-6">
+                            <h5><i class="bi bi-shield-lock"></i> Безопасность</h5>
+                            <ul class="list-unstyled">
+                                <li>
+                                    {% if service.two_factor_auth %}
+                                        <i class="bi bi-check-circle-fill feature-yes"></i>
+                                    {% else %}
+                                        <i class="bi bi-x-circle-fill feature-no"></i>
+                                    {% endif %}
+                                    Двухфакторная аутентификация
+                                </li>
+                                <li>
+                                    {% if service.antifraud_automated %}
+                                        <i class="bi bi-check-circle-fill feature-yes"></i>
+                                    {% else %}
+                                        <i class="bi bi-x-circle-fill feature-no"></i>
+                                    {% endif %}
+                                    Антифрод-мониторинг
+                                </li>
+                                <li>
+                                    {% if service.auto_logout %}
+                                        <i class="bi bi-check-circle-fill feature-yes"></i>
+                                    {% else %}
+                                        <i class="bi bi-x-circle-fill feature-no"></i>
+                                    {% endif %}
+                                    Автовыход ({{ service.auto_logout_time }} мин)
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div class="col-md-6">
+                            <h5><i class="bi bi-globe"></i> Международные переводы</h5>
+                            <ul class="list-unstyled">
+                                <li>
+                                    {% if service.international_transfers %}
+                                        <i class="bi bi-check-circle-fill feature-yes"></i>
+                                    {% else %}
+                                        <i class="bi bi-x-circle-fill feature-no"></i>
+                                    {% endif %}
+                                    Доступны
+                                </li>
+                                {% if service.international_countries %}
+                                <li>
+                                    <strong>Страны:</strong> <small>{{ service.international_countries|truncatewords:15 }}</small>
+                                </li>
+                                {% endif %}
+                                <li>
+                                    {% if service.swift_available %}
+                                        <i class="bi bi-check-circle-fill feature-yes"></i>
+                                    {% else %}
+                                        <i class="bi bi-x-circle-fill feature-no"></i>
+                                    {% endif %}
+                                    SWIFT переводы
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="col-md-4">
+            <!-- Полная информация о банке -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-info text-white">
+                    <h5><i class="bi bi-bank"></i> О банке {{ service.bank.name }}</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Лицензия ЦБ РФ:</strong> {{ service.bank.license_number|default:"нет данных" }}</p>
+                    <p><strong>Тип банка:</strong> {{ service.bank.get_bank_type_display|default:"-" }}</p>
+                    <p><strong>Год основания:</strong> {{ service.bank.founded_year|default:"-" }}</p>
+                    <p><strong>Лет на рынке:</strong> {{ service.bank.years_existence|default:"-" }} лет</p>
+
+                    <hr>
+
+                    <h6><i class="bi bi-geo-alt"></i> Инфраструктура в Нижегородской области</h6>
+                    <p><strong>Отделений:</strong> {{ service.bank.branches_count|default:"-" }}<br>
+                    <strong>Банкоматов:</strong> {{ service.bank.atms_count|default:"-" }}</p>
+
+                    <hr>
+
+                    <h6><i class="bi bi-star"></i> Рейтинги и репутация</h6>
+                    <p><strong>Финансовый рейтинг:</strong> {% if service.bank.financial_rating %}#{{ service.bank.financial_rating }} место{% else %}нет данных{% endif %}<br>
+                    <strong>Народный рейтинг:</strong> {% if service.bank.public_rating %}#{{ service.bank.public_rating }} место{% else %}нет данных{% endif %}<br>
+                    <strong>Средняя оценка клиентов:</strong> {{ service.bank.avg_customer_rating|floatformat:2 }}/5</p>
+
+                    <hr>
+
+                    <h6><i class="bi bi-headset"></i> Поддержка</h6>
+                    <p><strong>Телефон:</strong> {{ service.bank.phone|default:"-" }}<br>
+                    <strong>Сайт:</strong> {% if service.bank.website %}<a href="{{ service.bank.website }}" target="_blank">{{ service.bank.website }}</a>{% else %}-{% endif %}<br>
+                    <strong>Круглосуточная поддержка:</strong>
+                        {% if service.support_online %}
+                            <i class="bi bi-check-circle-fill feature-yes"></i> Да
+                        {% else %}
+                            <i class="bi bi-x-circle-fill feature-no"></i> Нет
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+
+            <!-- Тарифы и лимиты -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-secondary text-white">
+                    <h5><i class="bi bi-calculator"></i> Тарифы и лимиты</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong> Стоимость обслуживания:</strong>
+                        {% if service.monthly_fee_min == service.monthly_fee_max %}
+                            {{ service.monthly_fee_min|floatformat:0 }} ₽/мес
+                        {% else %}
+                            {{ service.monthly_fee_min|floatformat:0 }} - {{ service.monthly_fee_max|floatformat:0 }} ₽/мес
+                        {% endif %}
+                    </p>
+
+                    <hr>
+
+                    <p><strong><i class="bi bi-arrow-left-right"></i> Переводы:</strong></p>
+                    <ul class="small">
+                        <li> Внутри банка: {{ service.internal_transfer_fee }}%</li>
+                        <li> По СБП: {{ service.sbp_transfer_fee }}% (до {{ service.transfer_free_limit|floatformat:0 }} ₽/мес бесплатно)</li>
+                        <li> По карте: {{ service.card_transfer_fee }}%</li>
+                    </ul>
+
+                    <p><strong><i class="bi bi-cash-stack"></i> Снятие наличных:</strong></p>
+                    <ul class="small">
+                        <li> Бесплатный лимит: {{ service.cash_withdrawal_free_limit|floatformat:0 }} ₽/мес</li>
+                        <li> Комиссия сверх лимита: {{ service.cash_withdrawal_fee }}%</li>
+                    </ul>
+
+                    <p><strong><i class="bi bi-piggy-bank"></i> Внесение наличных:</strong></p>
+                    <ul class="small">
+                        <li> Бесплатный лимит: {{ service.deposit_free_limit|floatformat:0 }} ₽/мес</li>
+                        <li> Комиссия сверх лимита: {{ service.deposit_fee }}%</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,480 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Сравнение банков для самозанятых{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <!-- Фильтры -->
+        <div class="col-md-3">
+            <div class="filter-section">
+                <h5 class="mb-3"><i class="bi bi-funnel"></i> Фильтры</h5>
+                <form method="get" id="filter-form">
+                    <!-- Поиск -->
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Поиск</label>
+                        {{ form.query }}
+                    </div>
+
+                    <!-- Сортировка -->
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Сортировка</label>
+                        {{ form.sort_by }}
+                    </div>
+
+                    <!-- Тип банка -->
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Тип банка</label>
+                        {{ form.bank_type }}
+                    </div>
+
+                    <!-- Оценка -->
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Мин. оценка сервиса</label>
+                        {{ form.min_ahp_rating }}
+                    </div>
+
+                    <!-- Месячное обслуживание -->
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Макс. стоимость (₽/мес)</label>
+                        <div class="input-group">
+                            {{ form.max_monthly_fee }}
+                            <span class="input-group-text">₽</span>
+                        </div>
+                    </div>
+
+                    <!-- Лимиты переводов -->
+                    <div class="mb-3">
+                        <label class="form-label fw-bold"><i class="bi bi-arrow-left-right"></i> Мин. лимит переводов</label>
+                        {{ form.min_transfer_limit }}
+                    </div>
+
+                    <!-- 1. НАЛОГОВО-УЧЁТНАЯ ИНТЕГРАЦИЯ -->
+                    <div class="mb-3">
+                        <label class="form-label fw-bold"><i class="bi bi-receipt"></i> Налогово-учётная интеграция</label>
+                        <div class="form-check">
+                            {{ form.auto_tax_calculation }}
+                            <label class="form-check-label">Автоматический расчёт налога</label>
+                        </div>
+                        <div class="form-check">
+                            {{ form.auto_tax_payment }}
+                            <label class="form-check-label">Автоматическая оплата налога</label>
+                        </div>
+                        <div class="form-check">
+                            {{ form.automatic_checks }}
+                            <label class="form-check-label">Автоматическое формирование чеков</label>
+                        </div>
+                        <div class="form-check">
+                            {{ form.cancel_checks }}
+                            <label class="form-check-label">Отмена чеков</label>
+                        </div>
+                    </div>
+
+                    <!-- 2. ПЛАТЁЖНО-РАСЧЁТНЫЙ ФУНКЦИОНАЛ -->
+                    <div class="mb-3">
+                        <label class="form-label fw-bold"><i class="bi bi-credit-card"></i> Платёжно-расчётный функционал</label>
+                        <div class="form-check">
+                            {{ form.payment_by_phone }}
+                            <label class="form-check-label">Приём переводов по номеру телефона</label>
+                        </div>
+                        <div class="form-check">
+                            {{ form.payment_by_qr }}
+                            <label class="form-check-label">Приём переводов по QR-коду</label>
+                        </div>
+                        <div class="form-check">
+                            {{ form.payment_by_details }}
+                            <label class="form-check-label">Приём переводов по реквизитам</label>
+                        </div>
+                    </div>
+
+                    <!-- 3. БЕЗОПАСНОСТЬ -->
+                    <div class="mb-3">
+                        <label class="form-label fw-bold"><i class="bi bi-shield-lock"></i> Безопасность</label>
+                        <div class="form-check">
+                            {{ form.two_factor_auth }}
+                            <label class="form-check-label">Двухфакторная аутентификация</label>
+                        </div>
+                        <div class="form-check">
+                            {{ form.antifraud_automated }}
+                            <label class="form-check-label">Антифрод-мониторинг</label>
+                        </div>
+                    </div>
+
+                    <!-- 4. УДОБСТВО ИСПОЛЬЗОВАНИЯ -->
+                    <div class="mb-3">
+                        <label class="form-label fw-bold"><i class="bi bi-phone"></i> Удобство использования</label>
+                        <div class="form-check">
+                            {{ form.web_cabinet }}
+                            <label class="form-check-label">Веб-кабинет</label>
+                        </div>
+                        <div class="form-check">
+                            {{ form.mobile_app }}
+                            <label class="form-check-label">Мобильное приложение</label>
+                        </div>
+                        <div class="form-check">
+                            {{ form.support_online }}
+                            <label class="form-check-label">Поддержка 24/7</label>
+                        </div>
+                    </div>
+
+                    <!-- 5. ДОПОЛНИТЕЛЬНЫЕ ЦИФРОВЫЕ СЕРВИСЫ -->
+                    <div class="mb-3">
+                        <label class="form-label fw-bold"><i class="bi bi-graph-up"></i> Дополнительные цифровые сервисы</label>
+                        <div class="form-check">
+                            {{ form.income_statistics }}
+                            <label class="form-check-label">Наличие аналитики доходов</label>
+                        </div>
+                        <div class="form-check">
+                            {{ form.limit_control }}
+                            <label class="form-check-label">Контроль лимита дохода</label>
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary"><i class="bi bi-search"></i> Применить</button>
+                        <a href="{% url 'bank_list' %}" class="btn btn-outline-secondary"><i class="bi bi-arrow-counterclockwise"></i> Сбросить</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Таблица сравнения -->
+        <div class="col-md-9">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h2><i class="bi bi-table"></i> Сравнение банков</h2>
+                <span class="badge bg-primary p-3">Банков: {{ banks_count }} | Сервисов: {{ total_services }}</span>
+            </div>
+
+            {% if banks %}
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th style="min-width: 200px;">Банк / Сервис</th>
+                            <th class="rating-column">Оценка<br>сервиса</th>
+                            <th>Плата ₽/мес</th>
+                            <th>Лимиты<br>переводов</th>
+                            <th>Расчёт<br>налога</th>
+                            <th>Автоналог</th>
+                            <th>Авточеки</th>
+                            <th>Отмена<br>чеков</th>
+                            <th>Приём по<br>телефону</th>
+                            <th>Приём по<br>QR</th>
+                            <th>Приём по<br>реквизитам</th>
+                            <th>2FA</th>
+                            <th>Анти-<br>фрод</th>
+                            <th>Веб-<br>кабинет</th>
+                            <th>Моб.<br>приложение</th>
+                            <th>Поддержка</th>
+                            <th>Аналитика</th>
+                            <th>Контроль<br>лимита</th>
+                            <th>Действия</th>
+                        </thead>
+                        <tbody>
+                            {% for bank in banks %}
+                                {% for service in bank.services.all %}
+                                    <tr>
+                                        {% if forloop.first %}
+                                        <td rowspan="{{ bank.services.count }}" class="align-middle">
+                                            <strong>{{ bank.name }}</strong><br>
+                                            {% if bank.service_name %}
+                                            <small class="text-success">Сервис: {{ bank.service_name }}</small><br>
+                                            {% endif %}
+                                            <small class="text-muted"><i class="bi bi-geo-alt"></i> {{ bank.branches_count }} отд. / {{ bank.atms_count }} банк.</small>
+                                            <br><small class="text-muted"><i class="bi bi-star"></i> Рейтинг: {{ bank.avg_customer_rating }}/5</small>
+                                            <br><small class="text-muted"><i class="bi bi-building"></i> На рынке: {{ bank.years_existence }} лет</small>
+                                        </td>
+                                        {% endif %}
+
+                                        <td class="text-center rating-column">
+                                            <span class="score-badge
+                                                {% if service.dynamic_saw_10 >= 9 %}score-high
+                                                {% elif service.dynamic_saw_10 >= 8 %}score-medium
+                                                {% else %}score-low{% endif %}">
+                                                {{ service.dynamic_saw_10|floatformat:1 }}
+                                            </span>
+                                        </td>
+
+                                        <td class="text-center">
+                                            {% if service.monthly_fee_min == service.monthly_fee_max %}
+                                                <strong>{{ service.monthly_fee_min|floatformat:0 }}</strong>
+                                            {% else %}
+                                                <strong>{{ service.monthly_fee_min|floatformat:0 }}-{{ service.monthly_fee_max|floatformat:0 }}</strong>
+                                            {% endif %}
+                                        </td>
+
+                                        <td class="text-center">
+                                            {% if service.transfer_free_limit %}
+                                                <span class="badge bg-secondary">до {{ service.transfer_free_limit|floatformat:0 }} ₽/мес</span><br>
+                                                <small>комиссия: {{ service.sbp_transfer_fee }}%</small>
+                                            {% else %}
+                                                <span class="text-muted">—</span>
+                                            {% endif %}
+                                        </td>
+
+                                        <!-- Расчёт налога -->
+                                        <td class="text-center">
+                                            {% if service.auto_tax_calculation %}
+                                                <i class="bi bi-check-circle-fill feature-yes"></i>
+                                            {% else %}
+                                                <i class="bi bi-x-circle-fill feature-no"></i>
+                                            {% endif %}
+                                        </td>
+
+                                        <!-- Автоналог -->
+                                        <td class="text-center">
+                                            {% if service.auto_tax_payment %}
+                                                <i class="bi bi-check-circle-fill feature-yes"></i>
+                                            {% else %}
+                                                <i class="bi bi-x-circle-fill feature-no"></i>
+                                            {% endif %}
+                                        </td>
+
+                                        <!-- Авточеки -->
+                                        <td class="text-center">
+                                            {% if service.automatic_checks %}
+                                                <i class="bi bi-check-circle-fill feature-yes"></i>
+                                            {% else %}
+                                                <i class="bi bi-x-circle-fill feature-no"></i>
+                                            {% endif %}
+                                        </td>
+
+                                        <!-- Отмена чеков -->
+                                        <td class="text-center">
+                                            {% if service.cancel_checks %}
+                                                <i class="bi bi-check-circle-fill feature-yes"></i>
+                                            {% else %}
+                                                <i class="bi bi-x-circle-fill feature-no"></i>
+                                            {% endif %}
+                                        </td>
+
+                                        <!-- Приём по телефону -->
+                                        <td class="text-center">
+                                            {% if service.payment_by_phone %}
+                                                <i class="bi bi-check-circle-fill feature-yes"></i>
+                                            {% else %}
+                                                <i class="bi bi-x-circle-fill feature-no"></i>
+                                            {% endif %}
+                                        </td>
+
+                                        <!-- Приём по QR -->
+                                        <td class="text-center">
+                                            {% if service.payment_by_qr %}
+                                                <i class="bi bi-check-circle-fill feature-yes"></i>
+                                            {% else %}
+                                                <i class="bi bi-x-circle-fill feature-no"></i>
+                                            {% endif %}
+                                        </td>
+
+                                        <!-- Приём по реквизитам -->
+                                        <td class="text-center">
+                                            {% if service.payment_by_details %}
+                                                <i class="bi bi-check-circle-fill feature-yes"></i>
+                                            {% else %}
+                                                <i class="bi bi-x-circle-fill feature-no"></i>
+                                            {% endif %}
+                                        </td>
+
+                                        <!-- 2FA -->
+                                        <td class="text-center">
+                                            {% if service.two_factor_auth %}
+                                                <i class="bi bi-check-circle-fill feature-yes"></i>
+                                            {% else %}
+                                                <i class="bi bi-x-circle-fill feature-no"></i>
+                                            {% endif %}
+                                        </td>
+
+                                        <!-- Антифрод -->
+                                        <td class="text-center">
+                                            {% if service.antifraud_automated %}
+                                                <i class="bi bi-check-circle-fill feature-yes"></i>
+                                            {% else %}
+                                                <i class="bi bi-x-circle-fill feature-no"></i>
+                                            {% endif %}
+                                        </td>
+
+                                        <!-- Веб-кабинет -->
+                                        <td class="text-center">
+                                            {% if service.web_cabinet %}
+                                                <i class="bi bi-check-circle-fill feature-yes"></i>
+                                            {% else %}
+                                                <i class="bi bi-x-circle-fill feature-no"></i>
+                                            {% endif %}
+                                        </td>
+
+                                        <!-- Мобильное приложение -->
+                                        <td class="text-center">
+                                            {% if service.mobile_app %}
+                                                <i class="bi bi-check-circle-fill feature-yes"></i>
+                                            {% else %}
+                                                <i class="bi bi-x-circle-fill feature-no"></i>
+                                            {% endif %}
+                                        </td>
+
+                                        <!-- Поддержка -->
+                                        <td class="text-center">
+                                            {% if service.support_online %}
+                                                <i class="bi bi-check-circle-fill feature-yes"></i>
+                                            {% else %}
+                                                <i class="bi bi-x-circle-fill feature-no"></i>
+                                            {% endif %}
+                                        </td>
+
+                                        <!-- Аналитика доходов -->
+                                        <td class="text-center">
+                                            {% if service.income_statistics %}
+                                                <i class="bi bi-check-circle-fill feature-yes"></i>
+                                            {% else %}
+                                                <i class="bi bi-x-circle-fill feature-no"></i>
+                                            {% endif %}
+                                        </td>
+
+                                        <!-- Контроль лимита -->
+                                        <td class="text-center">
+                                            {% if service.limit_control %}
+                                                <i class="bi bi-check-circle-fill feature-yes"></i>
+                                            {% else %}
+                                                <i class="bi bi-x-circle-fill feature-no"></i>
+                                            {% endif %}
+                                        </td>
+
+                                        <td class="text-center">
+                                            <a href="{% url 'service_detail' service.pk %}" class="btn btn-sm btn-outline-primary" title="Подробнее">
+                                                <i class="bi bi-info-circle"></i>
+                                            </a>
+                                            <button class="btn btn-sm btn-outline-success compare-btn" data-service-id="{{ service.id }}" title="Сравнить">
+                                                <i class="bi bi-plus-circle"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            {% else %}
+            <div class="alert alert-info"><i class="bi bi-info-circle"></i> Ничего не найдено.</div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+    let compareList = JSON.parse(localStorage.getItem('compareList') || '[]');
+
+    function updateCompareButtons() {
+        document.querySelectorAll('.compare-btn').forEach(btn => {
+            const id = btn.dataset.serviceId;
+            if (compareList.includes(id)) {
+                btn.classList.remove('btn-outline-success');
+                btn.classList.add('btn-success');
+                btn.innerHTML = '<i class="bi bi-check-circle"></i>';
+            } else {
+                btn.classList.remove('btn-success');
+                btn.classList.add('btn-outline-success');
+                btn.innerHTML = '<i class="bi bi-plus-circle"></i>';
+            }
+        });
+    }
+
+    document.querySelectorAll('.compare-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const id = this.dataset.serviceId;
+            const idx = compareList.indexOf(id);
+
+            if (idx === -1) {
+                if (compareList.length < 6) compareList.push(id);
+                else { alert('Можно сравнить не более 6 сервисов'); return; }
+            } else {
+                compareList.splice(idx, 1);
+            }
+
+            localStorage.setItem('compareList', JSON.stringify(compareList));
+            updateCompareCounter();
+            updateCompareButtons();
+        });
+    });
+
+    updateCompareButtons();
+</script>
+
+<script>
+    // Функция проверки, выбран ли хотя бы один фильтр
+    function isAnyFilterSelected() {
+        // Список всех полей фильтров (кроме поиска и сортировки)
+        const filterFields = [
+            'bank_type',
+            'min_ahp_rating',
+            'max_monthly_fee',
+            'min_transfer_limit',
+            'auto_tax_calculation',
+            'auto_tax_payment',
+            'automatic_checks',
+            'cancel_checks',
+            'payment_by_phone',
+            'payment_by_qr',
+            'payment_by_details',
+            'two_factor_auth',
+            'antifraud_automated',
+            'web_cabinet',
+            'mobile_app',
+            'support_online',
+            'income_statistics',
+            'limit_control'
+        ];
+
+        for (let i = 0; i < filterFields.length; i++) {
+            const element = document.querySelector(`[name="${filterFields[i]}"]`);
+            if (element) {
+                // Для чекбоксов проверяем checked
+                if (element.type === 'checkbox') {
+                    if (element.checked) return true;
+                }
+                // Для остальных полей проверяем value
+                else if (element.value && element.value !== '') {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    // Функция показа модального окна
+    function showErrorModal() {
+        const errorModal = new bootstrap.Modal(document.getElementById('errorModal'));
+        errorModal.show();
+    }
+
+    // Перехватываем отправку формы
+    document.getElementById('filter-form').addEventListener('submit', function(e) {
+        const hasFilters = isAnyFilterSelected();
+
+        if (!hasFilters) {
+            e.preventDefault();  // Отменяем отправку формы
+            showErrorModal();    // Показываем красивое окно ошибки
+            return false;
+        }
+
+        // Если фильтры выбраны, показываем оценку (убираем класс hidden)
+        document.querySelectorAll('.rating-column').forEach(el => {
+            el.classList.remove('hidden');
+        });
+    });
+
+    // При загрузке страницы: если есть параметры в URL, показываем оценку
+    if (window.location.search.length > 0) {
+        document.querySelectorAll('.rating-column').forEach(el => {
+            el.classList.remove('hidden');
+        });
+    } else {
+        // Изначально скрываем колонку с оценкой
+        document.querySelectorAll('.rating-column').forEach(el => {
+            el.classList.add('hidden');
+        });
+    }
+</script>
+
+{% endblock %}

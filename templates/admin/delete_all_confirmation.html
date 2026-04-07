@@ -1,0 +1,20 @@
+{% extends "admin/base_site.html" %}
+{% block content %}
+<div class="container">
+    <h1>Удаление всех данных</h1>
+    <div class="alert alert-danger">
+        <strong>Внимание!</strong> Это действие удалит все данные:
+        <ul>
+            <li>Банки: {{ bank_count }}</li>
+            <li>Сервисы: {{ service_count }}</li>
+            <li>Отзывы: {{ review_count }}</li>
+        </ul>
+    </div>
+
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Удалить все данные</button>
+        <a href="/admin/" class="btn btn-secondary">Отмена</a>
+    </form>
+</div>
+{% endblock %}

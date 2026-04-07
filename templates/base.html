@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Сравнение ДБО для самозанятых{% endblock %}</title>
+
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+
+    <style>
+        .rating-star { color: #ffc107; }
+        .score-badge {
+            font-size: 1rem;
+            font-weight: bold;
+            padding: 4px 10px;
+            border-radius: 20px;
+            display: inline-block;
+        }
+        .score-badge-compare {
+            font-size: 1.2rem;
+            font-weight: bold;
+            padding: 5px 12px;
+            border-radius: 35px;
+            display: inline-block;
+            min-width: 60px;
+            text-align: center;
+            white-space: nowrap;
+        }
+        .score-badge-large {
+            font-size: 1.7rem;
+            font-weight: bold;
+            padding: 12px 10px;
+            border-radius: 60px;
+            display: inline-block;
+            min-width: 100px;
+            text-align: center;
+        }
+        .score-high { background-color: #28a745; color: white; }
+        .score-medium { background-color: #ffc107; color: black; }
+        .score-low { background-color: #dc3545; color: white; }
+        .feature-yes { color: #28a745; font-size: 1.2rem; }
+        .feature-no { color: #dc3545; font-size: 1.2rem; }
+        .filter-section {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .bank-card:hover {
+            transform: translateY(-3px);
+            transition: transform 0.2s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'bank_list' %}">
+                <i class="bi bi-bank2"></i> ДБО для самозанятых
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" id="compareNavBtn">
+                            <i class="bi bi-bar-chart-steps"></i> Сравнение
+                            <span id="compareCount" class="badge bg-danger rounded-pill" style="display: none;">0</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin/">
+                            <i class="bi bi-gear"></i> Админка
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    {% block content %}{% endblock %}
+
+    <footer class="bg-light text-center text-lg-start mt-5 py-3">
+        <div class="container text-muted">
+            <small>© 2026 Сравнение сервисов ДБО для самозанятых. Данные актуальны на март 2026 года.</small>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    {% block extra_js %}{% endblock %}
+    <script>
+    // Функция для обновления счетчика
+    function updateCompareCounter() {
+        const compareList = JSON.parse(localStorage.getItem('compareList') || '[]');
+        const counterSpan = document.getElementById('compareCount');
+        if (counterSpan) {
+            if (compareList.length > 0) {
+                counterSpan.textContent = compareList.length;
+                counterSpan.style.display = 'inline-block';
+            } else {
+                counterSpan.style.display = 'none';
+            }
+        }
+    }
+
+    // Функция открытия модального окна
+    function openCompareModal() {
+        const compareList = JSON.parse(localStorage.getItem('compareList') || '[]');
+        if (compareList.length === 0) {
+            alert('Нет выбранных сервисов для сравнения');
+            return;
+        }
+
+        const url = "{% url 'compare_services' %}?ids=" + compareList.join('&ids=');
+        fetch(url)
+            .then(response => response.text())
+            .then(html => {
+                const modalBody = document.getElementById('compare-content');
+                if (modalBody) {
+                    modalBody.innerHTML = html;
+                    const modal = new bootstrap.Modal(document.getElementById('compareModal'));
+                    modal.show();
+                }
+            });
+    }
+
+    // Обработчик на кнопку
+    document.addEventListener('DOMContentLoaded', function() {
+        const compareBtn = document.getElementById('compareNavBtn');
+        if (compareBtn) {
+            compareBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                openCompareModal();
+            });
+        }
+        updateCompareCounter();
+    });
+    </script>
+
+    <!-- Модальное окно для сравнения -->
+    <div class="modal fade" id="compareModal" tabindex="-1">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="bi bi-bar-chart-steps"></i> Сравнение сервисов</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="compare-content"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно для ошибки при невыбранных фильтрах-->
+<div class="modal fade" id="errorModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg" style="background: rgba(255,255,255,0.95); backdrop-filter: blur(10px);">
+            <div class="modal-header border-0 pb-0">
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-center pt-0 pb-4">
+                <div class="mb-3">
+                    <div class="bg-warning bg-opacity-10 rounded-circle d-inline-flex p-3">
+                        <i class="bi bi-funnel text-warning fs-1"></i>
+                    </div>
+                </div>
+                <h5 class="fw-bold mb-2">Фильтры не выбраны</h5>
+                <p class="text-muted mb-0 px-3">Пожалуйста, выберите хотя бы один параметр<br>для выбора банков</p>
+            </div>
+            <div class="modal-footer border-0 justify-content-center pt-0 pb-4">
+                <button type="button" class="btn btn-warning px-4 rounded-pill" data-bs-dismiss="modal">
+                    <i class="bi bi-check-lg me-1"></i> Понятно
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

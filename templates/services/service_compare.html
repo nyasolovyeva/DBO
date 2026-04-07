@@ -1,0 +1,26 @@
+<div class="table-responsive">
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Характеристика</th>
+                {% for service in services %}
+                <th>{{ service.name }}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Месячная плата</td>
+                {% for service in services %}
+                <td>{{ service.monthly_fee }} ₽</td>
+                {% endfor %}
+            </tr>
+            <tr>
+                <td>Рейтинг</td>
+                {% for service in services %}
+                <td>{{ service.avg_rating|floatformat:1 }}</td>
+                {% endfor %}
+            </tr>
+        </tbody>
+    </table>
+</div>
